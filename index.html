@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>EdaPoly | مونوپولی شهرها</title>
+<title>Edalin | Monopoly Cities</title>
 <link rel="icon" href="logo.jpg">
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Vazirmatn:wght@400;700;900&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js"></script>
@@ -74,8 +74,8 @@ nav button{background:none;border-color:transparent;white-space:nowrap}
 .dice.toss{animation:toss 1s}
 @keyframes toss{35%{transform:translateY(-34px) scale(1.25)}70%{transform:none}85%{transform:scale(.96)}}
 .die{width:var(--ds);height:var(--ds);position:relative;transform-style:preserve-3d;transition:transform 1.1s cubic-bezier(.15,.7,.2,1)}
-.fc{position:absolute;inset:0;display:grid;grid-template:repeat(3,1fr)/repeat(3,1fr);padding:15%;border-radius:16%;background:linear-gradient(145deg,#fff,#cfd2e4);backface-visibility:hidden}
-.fc i{width:78%;height:78%;margin:auto;border-radius:50%;background:radial-gradient(circle at 35% 30%,#555,#111)}
+.fc{position:absolute;inset:0;display:grid;grid-template:repeat(3,1fr)/repeat(3,1fr);padding:15%;border-radius:16%;background:linear-gradient(145deg,#ffffff,#dfe3ef)!important;color:#111;backface-visibility:hidden;box-shadow:inset 0 0 0 2px #ffffffaa,0 5px 12px #0005}
+.fc i{width:78%;height:78%;margin:auto;border-radius:50%;background:#171a22!important;box-shadow:inset 1px 1px 2px #fff3,0 1px 2px #0008}
 .fc:nth-child(1){transform:translateZ(calc(var(--ds)/2))}
 .fc:nth-child(2){transform:rotateY(90deg) translateZ(calc(var(--ds)/2))}
 .fc:nth-child(3){transform:rotateX(90deg) translateZ(calc(var(--ds)/2))}
@@ -149,6 +149,32 @@ input{font-size:16px}
 .sr{display:flex;justify-content:space-between;align-items:center;gap:12px}
 .sr input[type=number],.sr select{width:120px}
 .sr input[type=checkbox]{width:22px;height:22px;accent-color:var(--ac)}
+
+/* ===== EDALIN PRO UI ===== */
+#game{max-width:1500px;margin:0 auto;align-items:flex-start}
+#side{width:min(96vw,390px);position:sticky;top:82px;max-height:calc(100dvh - 105px);overflow:auto}
+#side::-webkit-scrollbar{width:6px}#side::-webkit-scrollbar-thumb{background:var(--gb);border-radius:9px}
+.panel{padding:10px 0;border-bottom:1px solid rgba(255,255,255,.12)}
+.panel:last-child{border-bottom:0}.panel h4{margin:0 0 8px;font-size:1rem}
+#leader,#assets,#tradeBox{display:grid;gap:7px}
+.lbrow{display:grid;grid-template-columns:28px 1fr auto;align-items:center;gap:8px;padding:7px 9px;border-radius:12px;background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.07)}
+.lbrow.me{background:linear-gradient(90deg,var(--ac),rgba(255,255,255,.06));box-shadow:0 0 16px color-mix(in srgb,var(--ac) 30%,transparent)}
+.lbpos{font-family:Cinzel,serif;font-weight:900;text-align:center}.lbname{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.lbmoney{font-weight:900;direction:ltr}
+.asset{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:7px 9px;border-radius:10px;background:rgba(255,255,255,.045)}
+.asset b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.asset small{opacity:.7}
+.side-actions{display:grid;grid-template-columns:1fr 1fr;gap:7px}.side-actions button{min-width:0}
+#tradeBox select,#tradeBox input{width:100%}.offer{padding:8px;border-radius:11px;background:rgba(255,255,255,.06);border:1px solid var(--gb)}
+.offer button{margin-top:6px;width:100%}
+@media(max-width:900px){#game{display:block}#stage{margin:0 auto}#side{position:relative;top:auto;width:min(96vw,600px);margin:10px auto 0;max-height:none}}
+@media(max-width:700px){
+ #stage{--w:min(96vw,92vh,620px);width:var(--w)}
+ #bd{width:var(--w);height:var(--w)}
+ .dice{gap:12px;z-index:8}.die{--ds:clamp(40px,12vw,56px);filter:drop-shadow(0 5px 8px rgba(0,0,0,.65))}
+ .fc{background:linear-gradient(145deg,#ffffff,#e7e9f2)!important;border:2px solid rgba(0,0,0,.18);box-shadow:inset 0 0 0 2px rgba(255,255,255,.65),0 5px 12px rgba(0,0,0,.3)}
+ .fc i{background:#171a22!important;box-shadow:inset 1px 1px 2px rgba(255,255,255,.18)}
+ #mid{z-index:5}
+}
+
 </style>
 </head>
 <body data-t="purple">
@@ -176,12 +202,22 @@ input{font-size:16px}
   <div id="mid"><div id="em"></div><h2 id="cn"></h2><div id="potd"></div><div class="dice" id="dice"></div></div>
  </div></div>
  <aside id="side" class="gl">
-  <div id="inv" hidden><div class="rcode"><span>کد اتاق</span><b id="rcode" dir="ltr"></b></div><div class="row"><input id="link" readonly aria-label="لینک دعوت"><button id="cp">کپی لینک</button></div></div>
-  <div id="pls"></div>
-  <div id="loc" hidden class="row"><input id="ln" placeholder="بازیکن محلی" maxlength="14"><button id="la">افزودن</button></div>
-  <div id="log"></div>
-  <div class="row"><input id="chat" placeholder="پیام…" maxlength="120" autocomplete="off"><button id="cs">ارسال</button></div>
- </aside>
+   <div id="inv" hidden class="panel"><div class="rcode"><span>کد اتاق</span><b id="rcode" dir="ltr"></b></div><div class="row"><input id="link" readonly aria-label="لینک دعوت"><button id="cp">کپی لینک</button></div></div>
+   <div class="panel"><h4>🏆 جدول بازیکنان</h4><div id="pls"></div><div id="leader"></div></div>
+   <div class="panel"><h4>🏠 املاک من</h4><div id="assets"><small class="h">هنوز ملکی نداری.</small></div></div>
+   <div class="panel"><h4>🤝 معامله</h4>
+    <div id="tradeBox">
+      <select id="tradePlayer"><option value="">بازیکن مقصد…</option></select>
+      <select id="tradeProperty"><option value="">ملک برای معامله…</option></select>
+      <input id="tradeCash" type="number" min="0" step="50" placeholder="مبلغ نقدی پیشنهادی">
+      <div class="side-actions"><button id="tradeOffer">ارسال پیشنهاد</button><button id="tradeCancel">پاک کردن</button></div>
+      <div id="offers"></div>
+    </div>
+   </div>
+   <div class="panel"><h4>📜 رویدادها</h4><div id="log"></div></div>
+   <div class="panel"><h4>💬 چت</h4><div class="row"><input id="chat" placeholder="پیام…" maxlength="120" autocomplete="off"><button id="cs">ارسال</button></div></div>
+   <div id="loc" hidden class="row"><input id="ln" placeholder="بازیکن محلی" maxlength="14"><button id="la">افزودن</button></div>
+  </aside>
 </div>
 <div id="toast"></div>
 <div id="dock" class="gl" hidden><span id="who"></span><button id="b0" class="pri" hidden>شروع بازی</button><button id="b1" class="pri">انداختن تاس</button><button id="b2">خرید ملک</button><button id="b3">پایان نوبت</button></div>
@@ -227,7 +263,7 @@ function xy(i){return i<=10?[10,10-i]:i<=20?[10-(i-10),0]:i<=30?[0,i-20]:[i-30,1
 
 let S=null,host=false,peer=null,conn=null,conns=[];
 const me=()=>host?'host':(peer&&peer.id);
-const ns=city=>({city,set:{cash:1500,sal:200,max:6,rent:1,dbl:true,tax:true,pot:false},pot:0,players:[],own:{},turn:0,rolled:false,dice:[1,1],pend:null,log:['بازی شروع شد']});
+const ns=city=>({city,set:{cash:1500,sal:200,max:6,rent:1,dbl:true,tax:true,pot:false},pot:0,players:[],own:{},turn:0,rolled:false,dice:[1,1],pend:null,offers:[],log:['بازی شروع شد']});
 const addP=(name,cid)=>S.players.push({name,cid,cash:S.set.cash,pos:0,jail:0,col:PC[S.players.length%PC.length]});
 const log=m=>{S.log.unshift(m);S.log.length=Math.min(S.log.length,30)};
 const push=()=>{conns=conns.filter(c=>c.open);conns.forEach(c=>c.send(S));render()};
@@ -315,6 +351,34 @@ function pawns(){
 }
 Object.assign(CX,{chaharmahal:['#84cc16','⛰️'],istanbul:['#f97316','🌉'],dubai:['#eab308','🏙️'],paris:['#ec4899','🥐'],london:['#60a5fa','🎡'],newyork:['#22c55e','🗽'],tokyo:['#f43f5e','⛩️']});
 const esc=x=>String(x).replace(/[&<>"']/g,c=>'&#'+c.charCodeAt(0)+';');
+
+function renderLeader(){
+ const box=$('leader');if(!box)return;
+ const sorted=[...S.players].sort((a,b)=>{
+  const ia=S.players.indexOf(a),ib=S.players.indexOf(b);
+  const wa=a.cash+Object.keys(S.own).filter(k=>S.own[k]==ia).reduce((z,k)=>z+TL()[k].price,0);
+  const wb=b.cash+Object.keys(S.own).filter(k=>S.own[k]==ib).reduce((z,k)=>z+TL()[k].price,0);
+  return wb-wa;
+ });
+ box.innerHTML=sorted.map((p,i)=>`<div class="lbrow ${p.cid==me()?'me':''}"><span class="lbpos">${i+1}</span><span class="lbname">${esc(p.name)}${p.out?' 💀':''}</span><b class="lbmoney">${p.cash.toLocaleString('en-US')}</b></div>`).join('');
+}
+function renderAssets(){
+ const box=$('assets');if(!box)return;
+ const mi=S.players.findIndex(p=>p.cid==me()),mine=Object.keys(S.own).filter(k=>S.own[k]==mi);
+ box.innerHTML=mine.length?mine.map(k=>{const t=TL()[k];return `<div class="asset"><b>${esc(t.name)}</b><small>${t.price} 💰</small></div>`}).join(''):'<small class="h">هنوز ملکی نداری.</small>';
+}
+function renderTrades(){
+ const meIdx=S.players.findIndex(p=>p.cid==me()),sel=$('tradePlayer'),ps=S.players.filter(p=>p.cid!=me()&&!p.out);
+ if(sel)sel.innerHTML='<option value="">بازیکن مقصد…</option>'+ps.map(p=>`<option value="${esc(p.name)}">${esc(p.name)}</option>`).join('');
+ const mine=Object.keys(S.own).filter(k=>S.own[k]==meIdx),pr=$('tradeProperty');
+ if(pr)pr.innerHTML='<option value="">ملک برای معامله…</option>'+mine.map(k=>`<option value="${k}">${esc(TL()[k].name)}</option>`).join('');
+ const ob=$('offers');if(!ob)return;
+ const incoming=(S.offers||[]).filter(o=>o.status=='pending'&&(o.to==meIdx||o.from==meIdx));
+ ob.innerHTML=incoming.map(o=>{const a=S.players[o.from],b=S.players[o.to],t=TL()[o.prop];if(!a||!b||!t)return'';
+ return `<div class="offer">${esc(a.name)} → ${esc(b.name)}<br>🏠 ${esc(t.name)} ${o.cash?`+ ${o.cash} 💰`:''}
+ ${o.to==meIdx?`<div class="side-actions"><button data-trade-yes="${o.id}">قبول</button><button data-trade-no="${o.id}">رد</button></div>`:''}</div>`}).join('');
+}
+
 function render(){
  if(!S)return;
  const T=TL(),cur=S.players[S.turn],away=host&&cur&&cur.cid!='host'&&!new Set(conns.filter(c=>c.open).map(c=>c.peer)).has(cur.cid),mine=cur&&(cur.cid==me()||away),[ac,em]=CX[S.city]||['#fff','🎲'],pt=S.pend!=null?T[S.pend]:null,on=S.st&&!S.win;
@@ -335,7 +399,7 @@ function render(){
  pawns();
  $('pls').innerHTML=S.players.map((p,i)=>{const cls=pc[i]!=null&&p.cash!=pc[i]?(p.cash>pc[i]?'up':'dn'):'';pc[i]=p.cash;const nw=p.cash+Object.keys(S.own).filter(k=>S.own[k]==i).reduce((a,k)=>a+T[k].price,0);return`<div class="pl ${i==S.turn?'cur':''} ${p.out?'out':''}"><i style="background:${p.col}"></i><span>${esc(p.name)}<small class="h"> ثروت ${nw}</small></span><b class="${cls}">${p.cash}</b></div>`}).join('');
  $('log').innerHTML=S.log.map(l=>`<div>${esc(l)}</div>`).join('');
- if(S.log[0]!==tl){tl=S.log[0];toast(tl)}if(S.win&&!won){won=1;confetti()}$('rcode').textContent=S.code||'';$('link').value=location.href.split('?')[0].split('#')[0]+'?room='+S.code;$('inv').hidden=!S.code;
+ if(S.log[0]!==tl){tl=S.log[0];toast(tl)}if(S.win&&!won){won=1;confetti()}$('rcode').textContent=S.code||'';$('link').value=location.origin+location.pathname+'?room='+encodeURIComponent(S.code||'');$('inv').hidden=!S.code;
  $('loc').hidden=!host;
 }
 $('tiles').onclick=e=>{const el=e.target.closest('.t');if(!el||!S)return;const t=TL()[+el.dataset.i],o=S.own[t.i],ow=o!=null?S.players[o]:null;
@@ -369,7 +433,7 @@ $('mb').onclick=e=>{const b=e.target.closest('button[data-c],button[data-th]');i
 $('cc').onclick=e=>{const b=e.target.closest('button');if(b)pickCity(b.dataset.c)};
 let lc=0,lt;
 document.querySelectorAll('.lg').forEach(el=>el.onclick=()=>{
- lc++;clearTimeout(lt);lt=setTimeout(()=>lc=0,900);
+ lc++;clearTimeout(lt);lt=setTimeout(()=>lc=0,1400);
  if(lc>=3){lc=0;if($('con').classList.toggle('on'))setTimeout(()=>$('cin').focus(),60)}
 });
 document.addEventListener('keydown',e=>{
@@ -385,32 +449,84 @@ const nameOf=()=>$('nm').value.trim()||'بازیکن';
 const cl=v=>String(v||'').toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,5);
 const rq=cl(new URLSearchParams(location.search).get('room'));
 const err=m=>{$('err').textContent=m||''};
-$('lb-host').hidden=!!rq;$('lb-join').hidden=!rq;if(rq)$('rc0').textContent=rq;
+if(rq){$('lb-host').hidden=true;$('rc0').textContent=rq}else $('lb-join').hidden=true;
 chips();
 const show=()=>{$('lobby').hidden=true;$('game').hidden=false};
 const CH='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 const gen=()=>Array.from({length:5},()=>CH[Math.random()*CH.length|0]).join('');
+const PEER_CFG={
+  host:'0.peerjs.com',port:443,path:'/',secure:true,debug:1,
+  config:{iceServers:[
+    {urls:'stun:stun.l.google.com:19302'},
+    {urls:'stun:stun.cloudflare.com:3478'}
+  ]}
+};
+let joinTimer=0,joinBusy=false;
+function resetNet(){
+  clearTimeout(joinTimer);joinBusy=false;
+  try{if(conn){conn.close()}}catch(e){}
+  try{if(peer&&!peer.destroyed)peer.destroy()}catch(e){}
+  conn=null;peer=null;host=false;conns=[];
+}
 function hostRoom(tries=0){
+ resetNet();
  const code=gen();err('در حال ساخت اتاق…');
- const pr=new Peer('edapoly-'+code);peer=pr;
- pr.on('open',()=>{host=true;S=ns(pick);S.code=code;addP(nameOf(),'host');err();show();render();modal('settings')});
- pr.on('connection',c=>{conns.push(c);c.on('data',d=>handle(d,c.peer));c.on('open',()=>c.send(S))});
- pr.on('error',e=>{if(e.type=='unavailable-id'&&tries<5){pr.destroy();hostRoom(tries+1)}else err('ارتباط با سرور برقرار نشد. دوباره تلاش کن.')});
- pr.on('disconnected',()=>{if(!pr.destroyed)pr.reconnect()});
+ let pr;
+ try{pr=new Peer('edapoly-'+code,PEER_CFG)}catch(e){err('PeerJS اجرا نشد. صفحه را با Ctrl+F5 رفرش کن.');return}
+ peer=pr;
+ pr.on('open',()=>{
+   clearTimeout(joinTimer);host=true;joinBusy=false;S=ns(pick);S.code=code;addP(nameOf(),'host');
+   err('اتاق آماده است — کد را برای دوستت بفرست.');show();render();modal('settings');
+ });
+ pr.on('connection',c=>{
+   conns.push(c);
+   c.on('open',()=>{try{c.send(S)}catch(e){}});
+   c.on('data',d=>handle(d,c.peer));
+   c.on('close',()=>{conns=conns.filter(x=>x!==c);});
+   c.on('error',()=>{conns=conns.filter(x=>x!==c);});
+ });
+ pr.on('error',e=>{
+   if(e.type==='unavailable-id'&&tries<8){try{pr.destroy()}catch(x){};setTimeout(()=>hostRoom(tries+1),250);return}
+   const msg=e&&e.type==='network'?'سرور اتصال در دسترس نیست؛ اینترنت/فیلترشکن را بررسی کن.':('خطای اتصال: '+(e&&e.type?e.type:'نامشخص'));
+   err(msg+' دوباره تلاش کن.');
+ });
+ pr.on('disconnected',()=>{if(!pr.destroyed)err('ارتباط با سرور PeerJS قطع شد؛ در حال اتصال مجدد…');if(!pr.destroyed)pr.reconnect()});
+ joinTimer=setTimeout(()=>{if(!host){err('ساخت اتاق بیشتر از حد معمول طول کشید؛ دوباره «ساخت اتاق» را بزن.')}},15000);
 }
-function joinRoom(code){
- err('در حال اتصال…');
- const pr=new Peer();peer=pr;
- pr.on('open',()=>{conn=pr.connect('edapoly-'+code,{reliable:true});
-  conn.on('open',()=>conn.send({t:'hello',name:nameOf()}));
-  conn.on('data',d=>{if(!S){err();show()}S=d;render()});
-  conn.on('close',()=>{S=null;lastRc=-1;$('game').hidden=true;$('dock').hidden=true;$('lobby').hidden=false;err('ارتباط با میزبان قطع شد. دوباره وارد شو.')})});
- pr.on('error',e=>err(e.type=='peer-unavailable'?'اتاقی با این کد پیدا نشد.':'ارتباط با سرور برقرار نشد.'));
- setTimeout(()=>{if(!S)err('اتصال برقرار نشد. کد را چک کن و دوباره تلاش کن.')},12000);
+function joinRoom(code,attempt=0){
+ code=cl(code);
+ if(code.length!==5){err('کد اتاق باید دقیقاً ۵ حرف/عدد انگلیسی باشد.');return}
+ resetNet();joinBusy=true;S=null;err('در حال اتصال به اتاق '+code+'…');
+ let pr;
+ try{pr=new Peer(undefined,PEER_CFG)}catch(e){joinBusy=false;err('PeerJS اجرا نشد. صفحه را با Ctrl+F5 رفرش کن.');return}
+ peer=pr;
+ let gotState=false;
+ pr.on('open',()=>{
+   const target='edapoly-'+code;
+   try{conn=pr.connect(target,{reliable:true,serialization:'json',metadata:{room:code},timeout:9000})}catch(e){retryJoin(code,attempt,'خطا در ساخت اتصال');return}
+   if(!conn){retryJoin(code,attempt,'اتصال ساخته نشد');return}
+   conn.on('open',()=>{err('اتصال برقرار شد؛ ورود به بازی…');try{conn.send({t:'hello',name:nameOf()})}catch(e){retryJoin(code,attempt,'ارسال اطلاعات بازیکن ناموفق بود')}});
+   conn.on('data',d=>{if(d&&d.city){gotState=true;joinBusy=false;clearTimeout(joinTimer);S=d;err('');show();render()}});
+   conn.on('close',()=>{if(gotState){S=null;$('game').hidden=true;$('dock').hidden=true;$('lobby').hidden=false;err('ارتباط با میزبان قطع شد.')}else retryJoin(code,attempt,'اتصال بسته شد')});
+   conn.on('error',()=>{if(!gotState)retryJoin(code,attempt,'خطای کانال بازی')});
+ });
+ pr.on('error',e=>{
+   if(gotState)return;
+   if(e.type==='peer-unavailable'){retryJoin(code,attempt,'اتاق هنوز پیدا نشد')}
+   else if(e.type==='network'){joinBusy=false;err('به سرور PeerJS دسترسی نشد. اینترنت را بررسی کن و دوباره امتحان کن.')}
+   else {joinBusy=false;err('کد اتاق معتبر نیست یا اتاق بسته شده است.')}
+ });
+ joinTimer=setTimeout(()=>{if(!gotState)retryJoin(code,attempt,'زمان اتصال تمام شد')},10000);
 }
-$('mk').onclick=()=>hostRoom();
-$('jn').onclick=()=>joinRoom(rq);
-$('jc2').onclick=()=>{const c=cl($('jc').value);c.length==5?joinRoom(c):err('کد اتاق ۵ حرفی است.')};
+function retryJoin(code,attempt,reason){
+ clearTimeout(joinTimer);
+ if(!joinBusy)return;
+ try{if(conn)conn.close()}catch(e){}
+ try{if(peer&&!peer.destroyed)peer.destroy()}catch(e){}
+ conn=null;peer=null;
+ if(attempt<3){joinBusy=true;err(reason+' — تلاش دوباره '+(attempt+2)+'/4…');setTimeout(()=>joinRoom(code,attempt+1),700);}
+ else{joinBusy=false;err('اتصال به اتاق برقرار نشد. کد را دوباره بگیر و مطمئن شو میزبان هنوز داخل بازی است.');}
+}
 $('b0').onclick=()=>act('start');
 $('cp').onclick=()=>{$('link').select();navigator.clipboard&&navigator.clipboard.writeText($('link').value)};
 $('la').onclick=()=>{const n=$('ln').value.trim();if(n&&host){addP(n.slice(0,14),'host');$('ln').value='';push()}};
@@ -428,6 +544,20 @@ function setHTML(){
  return`<h3>تنظیمات اتاق</h3>${num('cash','پول شروع',100,50000,100)}${num('sal','حقوق عبور از شروع',0,2000,50)}${num('max','حداکثر بازیکن',2,8,1)}<label class="sr">ضریب اجاره<select data-k="rent" ${d}>${[.5,1,1.5,2,3].map(v=>`<option value="${v}" ${s.rent==v?'selected':''}>×${v}</option>`).join('')}</select></label>${chk('dbl','اجاره دوبرابر با مجموعهٔ کامل رنگ')}${chk('tax','مالیات فعال')}${chk('pot','جایزهٔ پارکینگ (مالیات‌ها جمع می‌شود)')}<small class="h">${host?(S.st?'پول شروع بعد از شروع بازی قابل تغییر نیست.':'تغییرها همان لحظه اعمال می‌شود.'):'فقط میزبان می‌تواند تنظیمات را عوض کند.'}</small>`;
 }
 $('mb').onchange=e=>{const t=e.target,k=t.dataset.k;if(!k||!host||!S)return;setSet(k,t.type=='checkbox'?t.checked:+t.value)};
+$('tradeOffer').onclick=()=>{};
+$('tradeOffer').onclick=()=>{
+ if(!S)return;
+ const to=$('tradePlayer').value,prop=Number($('tradeProperty').value),cash=Math.max(0,+$('tradeCash').value||0);
+ if(!to||!Number.isInteger(prop)){toast('بازیکن و ملک را انتخاب کن');return}
+ const payload={t:'trade',to,prop,cash};host?handle(payload,'host'):conn&&conn.send(payload);$('tradeCash').value='';
+};
+$('tradeCancel').onclick=()=>{$('tradePlayer').value='';$('tradeProperty').value='';$('tradeCash').value=''};
+$('offers').onclick=e=>{
+ const yes=e.target.closest('[data-trade-yes]'),no=e.target.closest('[data-trade-no]');
+ const id=Number((yes||no)?.dataset.tradeYes||(no?.dataset.tradeNo));if(!id)return;
+ const payload={t:'tradeAnswer',id,accept:!!yes};host?handle(payload,'host'):conn&&conn.send(payload);
+};
+
 </script>
 </body>
 </html>
