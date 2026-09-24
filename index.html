@@ -399,7 +399,10 @@ function render(){
  pawns();
  $('pls').innerHTML=S.players.map((p,i)=>{const cls=pc[i]!=null&&p.cash!=pc[i]?(p.cash>pc[i]?'up':'dn'):'';pc[i]=p.cash;const nw=p.cash+Object.keys(S.own).filter(k=>S.own[k]==i).reduce((a,k)=>a+T[k].price,0);return`<div class="pl ${i==S.turn?'cur':''} ${p.out?'out':''}"><i style="background:${p.col}"></i><span>${esc(p.name)}<small class="h"> ثروت ${nw}</small></span><b class="${cls}">${p.cash}</b></div>`}).join('');
  $('log').innerHTML=S.log.map(l=>`<div>${esc(l)}</div>`).join('');
- if(S.log[0]!==tl){tl=S.log[0];toast(tl)}if(S.win&&!won){won=1;confetti()}$('rcode').textContent=S.code||'';$('link').value=location.origin+location.pathname+'?room='+encodeURIComponent(S.code||'');$('inv').hidden=!S.code;
+ if(S.log[0]!==tl){tl=S.log[0];toast(tl)}if(S.win&&!won){won=1;confetti()}$('rcode').textContent=S.code||'';
+ const invitePeer=peer&&peer.id?peer.id:('edapoly-'+(S.code||''));
+ $('link').value=location.origin+location.pathname+'?room='+encodeURIComponent(S.code||'')+'&peer='+encodeURIComponent(invitePeer);
+ $('inv').hidden=!S.code;
  $('loc').hidden=!host;
 }
 $('tiles').onclick=e=>{const el=e.target.closest('.t');if(!el||!S)return;const t=TL()[+el.dataset.i],o=S.own[t.i],ow=o!=null?S.players[o]:null;
@@ -447,9 +450,19 @@ try{const s=localStorage.getItem('edapoly-theme');if(s&&THEMES[s])document.body.
 // ----- lobby & network -----
 const nameOf=()=>$('nm').value.trim()||'بازیکن';
 const cl=v=>String(v||'').toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,5);
-const rq=cl(new URLSearchParams(location.search).get('room'));
+const URLP=new URLSearchParams(location.search);
+const rq=cl(URLP.get('room') || (location.hash.match(/(?:^#|[&#])room=([^&]+)/)||[])[1]);
+const rqPeer=String(URLP.get('peer') || (location.hash.match(/(?:^#|[&#])peer=([^&]+)/)||[])[1] || '').trim();
 const err=m=>{$('err').textContent=m||''};
-if(rq){$('lb-host').hidden=true;$('rc0').textContent=rq}else $('lb-join').hidden=true;
+if(rq){
+  $('lb-host').hidden=true;
+  $('lb-join').hidden=false;
+  $('rc0').textContent=rq;
+  $('nm').placeholder='اسمت را وارد کن و «ورود به اتاق» را بزن';
+}else{
+  $('lb-join').hidden=true;
+}
+
 chips();
 const show=()=>{$('lobby').hidden=true;$('game').hidden=false};
 const CH='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
@@ -470,13 +483,19 @@ function resetNet(){
 }
 function hostRoom(tries=0){
  resetNet();
- const code=gen();err('در حال ساخت اتاق…');
+ const code=gen();
+ const peerId='edapoly-'+code+'-'+Math.random().toString(36).slice(2,8);
+ err('در حال ساخت اتاق…');
  let pr;
- try{pr=new Peer('edapoly-'+code,PEER_CFG)}catch(e){err('PeerJS اجرا نشد. صفحه را با Ctrl+F5 رفرش کن.');return}
+ try{pr=new Peer(peerId,PEER_CFG)}catch(e){err('PeerJS اجرا نشد. صفحه را با Ctrl+F5 رفرش کن.');return}
  peer=pr;
  pr.on('open',()=>{
    clearTimeout(joinTimer);host=true;joinBusy=false;S=ns(pick);S.code=code;addP(nameOf(),'host');
-   err('اتاق آماده است — کد را برای دوستت بفرست.');show();render();modal('settings');
+   err('اتاق آماده است — لینک دعوت آماده شد.');
+   show();render();
+   const invite=location.origin+location.pathname+'?room='+encodeURIComponent(code)+'&peer='+encodeURIComponent(peerId);
+   $('link').value=invite;
+   modal('settings');
  });
  pr.on('connection',c=>{
    conns.push(c);
@@ -502,8 +521,8 @@ function joinRoom(code,attempt=0){
  peer=pr;
  let gotState=false;
  pr.on('open',()=>{
-   const target='edapoly-'+code;
-   try{conn=pr.connect(target,{reliable:true,serialization:'json',metadata:{room:code},timeout:9000})}catch(e){retryJoin(code,attempt,'خطا در ساخت اتصال');return}
+   const target=rqPeer || ('edapoly-'+code);
+   try{conn=pr.connect(target,{reliable:true,serialization:'json',metadata:{room:code},timeout:15000})}catch(e){retryJoin(code,attempt,'خطا در ساخت اتصال');return}
    if(!conn){retryJoin(code,attempt,'اتصال ساخته نشد');return}
    conn.on('open',()=>{err('اتصال برقرار شد؛ ورود به بازی…');try{conn.send({t:'hello',name:nameOf()})}catch(e){retryJoin(code,attempt,'ارسال اطلاعات بازیکن ناموفق بود')}});
    conn.on('data',d=>{if(d&&d.city){gotState=true;joinBusy=false;clearTimeout(joinTimer);S=d;err('');show();render()}});
@@ -530,7 +549,13 @@ function retryJoin(code,attempt,reason){
 $('mk').onclick=()=>{const n=$('nm').value.trim();if(!n){err('اول اسمت را وارد کن.');$('nm').focus();return}hostRoom()};
 $('jc2').onclick=()=>{const n=$('nm').value.trim();if(!n){err('اول اسمت را وارد کن.');$('nm').focus();return}joinRoom($('jc').value)};
 $('jc').addEventListener('input',e=>{e.target.value=cl(e.target.value)});
-$('jn').onclick=()=>joinRoom(rq);
+$('jn').onclick=()=>{
+ const n=$('nm').value.trim();
+ if(!n){err('اول اسمت را وارد کن.');$('nm').focus();return}
+ if(!rq){err('لینک اتاق نامعتبر است.');return}
+ joinRoom(rq);
+};
+$('nm').addEventListener('keydown',e=>{if(e.key==='Enter' && rq){e.preventDefault();$('jn').click()}});
 $('b0').onclick=()=>act('start');
 $('cp').onclick=()=>{$('link').select();navigator.clipboard&&navigator.clipboard.writeText($('link').value)};
 $('la').onclick=()=>{const n=$('ln').value.trim();if(n&&host){addP(n.slice(0,14),'host');$('ln').value='';push()}};
