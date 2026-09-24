@@ -1,0 +1,433 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>EdaPoly | مونوپولی شهرها</title>
+<link rel="icon" href="logo.jpg">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Vazirmatn:wght@400;700;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js"></script>
+<style>
+:root{--rx:50deg;--rz:0deg;--w:min(94vw,80vh,800px);--sh:.74}
+body{--a:#12030a;--b:#7a0f1f;--c:#d1242f;--tx:#fff;--g:rgba(255,255,255,.08);--gb:rgba(255,255,255,.2);--in:rgba(0,0,0,.34);--ac:#a855f7}
+body[data-t=glass]{--a:#140a3c;--b:#0f7c8f;--c:#c2185b}
+body[data-t=sunset]{--a:#3b0a45;--b:#e4572e;--c:#f9a03f}
+body[data-t=ocean]{--a:#02233a;--b:#0a7ea4;--c:#48cae4}
+body[data-t=forest]{--a:#0b2a1e;--b:#2d8a5b;--c:#c9d46a}
+body[data-t=light]{--a:#e9eff8;--b:#f7cfe4;--c:#c7e6ff;--tx:#1c2333;--g:rgba(255,255,255,.6);--gb:rgba(255,255,255,.95);--in:rgba(255,255,255,.75)}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;font-family:Vazirmatn,Tahoma,sans-serif;color:var(--tx);background:var(--a);overflow-x:hidden}
+#bg{position:fixed;inset:0;z-index:-1;overflow:hidden}
+#bg i{position:absolute;border-radius:50%;filter:blur(90px);opacity:.5;animation:fl 20s ease-in-out infinite alternate}
+#bg i:nth-child(1){width:46vw;height:46vw;left:-10vw;top:-12vw;background:var(--c)}
+#bg i:nth-child(2){width:52vw;height:52vw;right:-14vw;bottom:-18vw;background:var(--b);animation-delay:-7s}
+#bg i:nth-child(3){width:30vw;height:30vw;left:38vw;top:32vh;background:var(--ac);opacity:.28;animation-delay:-12s}
+@keyframes fl{to{transform:translate(6vw,4vh) scale(1.15)}}
+.gl{background:var(--g);border:1px solid var(--gb);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-radius:16px;box-shadow:0 8px 32px rgba(0,0,0,.22)}
+input,select,button{font:inherit;color:inherit;border-radius:10px;border:1px solid var(--gb);background:var(--in);padding:8px 12px}
+button{cursor:pointer;background:var(--g);font-weight:700;transition:background .2s,transform .15s}
+button:hover:not(:disabled){background:var(--gb)}
+button:active:not(:disabled){transform:scale(.96)}
+button:disabled{opacity:.35;cursor:default}
+:focus-visible{outline:2px solid var(--tx);outline-offset:2px}
+[hidden]{display:none!important}
+header{position:sticky;top:10px;z-index:20;display:flex;align-items:center;gap:12px;width:min(1180px,calc(100% - 24px));margin:10px auto;padding:8px 14px}
+.lg{border-radius:50%;object-fit:cover;cursor:pointer;user-select:none;-webkit-user-drag:none;animation:sp 70s linear infinite;box-shadow:0 0 22px #ff1a1a99}
+header .lg{width:46px;height:46px}
+@keyframes sp{to{transform:rotate(360deg)}}
+.brand{font-family:Cinzel,serif;font-weight:900;font-size:1.5rem;letter-spacing:.12em;direction:ltr}
+nav{display:flex;gap:2px;margin-inline-start:auto;overflow-x:auto}
+nav button{background:none;border-color:transparent;white-space:nowrap}
+#lobby{width:min(440px,calc(100% - 24px));margin:5vh auto;padding:26px;display:grid;gap:14px;text-align:center}
+#lobby .lg{width:130px;height:130px;margin:0 auto}
+#lobby h1{margin:0;font-family:Cinzel,serif;font-size:2.6rem;letter-spacing:.14em}
+#lobby p{margin:0;opacity:.8}
+.chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.chips button{--k:#fff;display:flex;gap:6px;align-items:center}
+.chips button.on{background:var(--k);color:#111;border-color:var(--k)}
+#game{display:flex;flex-wrap:wrap;gap:22px;justify-content:center;align-items:flex-start;padding:6px 12px 40px}
+#stage{position:relative;width:var(--w);height:calc(var(--w)*var(--sh));perspective:1500px;perspective-origin:50% 25%;transition:height .4s}
+#bd{position:absolute;left:0;top:50%;width:var(--w);height:var(--w);margin-top:calc(var(--w)/-2);transform-style:preserve-3d;transform:rotateX(var(--rx)) rotateZ(var(--rz));transition:transform .45s;border-radius:18px;background:radial-gradient(circle at 50% 50%,color-mix(in srgb,var(--ac) 38%,transparent),transparent 62%),linear-gradient(145deg,rgba(255,255,255,.14),rgba(255,255,255,.04));border:1px solid var(--gb);box-shadow:0 2px 0 #fff3,0 5px 0 rgba(0,0,0,.4),0 8px 0 rgba(0,0,0,.45),0 11px 0 rgba(0,0,0,.5),0 40px 60px rgba(0,0,0,.45)}
+#tiles{position:absolute;inset:0;display:grid;grid-template:repeat(11,1fr)/repeat(11,1fr);gap:3px;padding:8px;transform-style:preserve-3d;direction:ltr}
+.t{position:relative;overflow:hidden;font-size:clamp(6px,calc(var(--w)/70),12px);padding:2px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;border-radius:7px;background:linear-gradient(160deg,rgba(255,255,255,.2),rgba(255,255,255,.05));border:1px solid var(--gb);box-shadow:0 3px 0 rgba(0,0,0,.35);direction:rtl;line-height:1.2;transition:transform .2s}
+.t:hover{transform:translateZ(14px)}
+.t.own{transform:translateZ(7px);border-bottom:4px solid var(--oc)}
+.t.own:hover{transform:translateZ(18px)}
+.cb{position:absolute;top:0;left:0;right:0;height:22%}
+.t b{margin-top:14%;font-weight:700}
+.t small{opacity:.75}
+.t.start{background:linear-gradient(135deg,#22c55e99,transparent)}
+.t.go,.t.jail{background:linear-gradient(135deg,#ef444499,transparent)}
+.t.park{background:linear-gradient(135deg,#f59e0b88,transparent)}
+#pawns{position:absolute;inset:8px;pointer-events:none;transform-style:preserve-3d}
+.pn{--pc:#f55;position:absolute;width:3.6%;aspect-ratio:1/1.6;margin-left:calc((var(--i) - 2)*1.3%);transform-origin:50% 100%;transform:translate(-50%,-92%) rotateX(calc(var(--rx)*-1));transition:left .18s linear,top .18s linear;filter:drop-shadow(0 6px 3px rgba(0,0,0,.55))}
+.pn::before{content:'';position:absolute;left:22%;top:0;width:56%;aspect-ratio:1;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff,var(--pc) 55%,#0007)}
+.pn::after{content:'';position:absolute;left:0;right:0;bottom:0;height:70%;clip-path:polygon(28% 0,72% 0,100% 100%,0 100%);background:linear-gradient(90deg,#0006,var(--pc) 32%,#fffa 48%,var(--pc) 64%,#0008)}
+.pn.on{animation:pulse 1.4s ease-in-out infinite}
+@keyframes pulse{50%{filter:drop-shadow(0 6px 3px rgba(0,0,0,.55)) drop-shadow(0 0 9px #fff)}}
+#mid{position:absolute;inset:calc(8px + (100% - 16px)/11);transform:translateZ(1px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:clamp(6px,1.4vw,14px);text-align:center;direction:rtl}
+#em{font-size:clamp(2rem,6vw,4.4rem);line-height:1;animation:bob 4s ease-in-out infinite;filter:drop-shadow(0 8px 10px #0006)}
+@keyframes bob{50%{transform:translateY(-8px)}}
+#cn{margin:0;font-size:clamp(1.1rem,3vw,2.2rem);font-weight:900}
+.acts{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.dice{display:flex;gap:clamp(14px,3vw,30px);perspective:700px;--ds:clamp(34px,5.4vw,58px)}
+.dice.toss{animation:toss 1s}
+@keyframes toss{35%{transform:translateY(-34px) scale(1.25)}70%{transform:none}85%{transform:scale(.96)}}
+.die{width:var(--ds);height:var(--ds);position:relative;transform-style:preserve-3d;transition:transform 1.1s cubic-bezier(.15,.7,.2,1)}
+.fc{position:absolute;inset:0;display:grid;grid-template:repeat(3,1fr)/repeat(3,1fr);padding:15%;border-radius:16%;background:linear-gradient(145deg,#fff,#cfd2e4);backface-visibility:hidden}
+.fc i{width:78%;height:78%;margin:auto;border-radius:50%;background:radial-gradient(circle at 35% 30%,#555,#111)}
+.fc:nth-child(1){transform:translateZ(calc(var(--ds)/2))}
+.fc:nth-child(2){transform:rotateY(90deg) translateZ(calc(var(--ds)/2))}
+.fc:nth-child(3){transform:rotateX(90deg) translateZ(calc(var(--ds)/2))}
+.fc:nth-child(4){transform:rotateX(-90deg) translateZ(calc(var(--ds)/2))}
+.fc:nth-child(5){transform:rotateY(-90deg) translateZ(calc(var(--ds)/2))}
+.fc:nth-child(6){transform:rotateY(180deg) translateZ(calc(var(--ds)/2))}
+#side{width:min(96vw,340px);padding:14px;display:grid;gap:12px}
+.row{display:flex;gap:6px}.row input{flex:1;min-width:0}
+.pl{display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:10px}
+.pl.cur{background:var(--gb)}
+.pl i{width:14px;height:14px;border-radius:50%;border:2px solid #fff;flex:none}
+.pl span{flex:1}
+small.h{opacity:.7;font-size:.78rem}
+#log{max-height:170px;overflow:auto;font-size:.85rem;display:grid;gap:3px;opacity:.9}
+#con{position:fixed;left:12px;bottom:12px;z-index:40;width:min(430px,calc(100vw - 24px));padding:12px;display:grid;gap:8px;direction:ltr;font-family:ui-monospace,Consolas,monospace;font-size:.9rem;opacity:0;transform:translateY(24px) scale(.97);pointer-events:none;transition:.28s;border-color:#ff3b3b88}
+#con.on{opacity:1;transform:none;pointer-events:auto}
+#cout{margin:0;white-space:pre-wrap;min-height:1.2em;color:#ff8a8a}
+#mo{position:fixed;inset:0;z-index:50;display:grid;place-items:center;background:rgba(0,0,0,.5);backdrop-filter:blur(4px)}
+#mb{width:min(520px,calc(100% - 24px));max-height:84vh;overflow:auto;padding:22px;display:grid;gap:12px;line-height:1.9}
+#mb h3{margin:0;font-size:1.3rem}#mb p,#mb ol{margin:0}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+body{min-height:100dvh}
+body[data-t=purple]{--a:#130f1d;--b:#5b21b6;--c:#c026d3}
+button,input{touch-action:manipulation}
+input{font-size:16px}
+.pri{background:var(--ac);border-color:transparent;color:#fff}
+.pri:hover:not(:disabled){background:var(--ac);filter:brightness(1.15)}
+#dock{position:fixed;left:50%;bottom:calc(10px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:25;display:flex;gap:8px;align-items:center;justify-content:center;flex-wrap:wrap;padding:8px 12px;width:max-content;max-width:calc(100% - 16px)}
+#dock button{min-height:42px}
+#who{font-weight:700}
+#game{padding-bottom:130px}
+#con{bottom:110px}
+.rcode{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.rcode b{font-size:1.6rem;letter-spacing:.22em;font-family:Cinzel,serif}
+.t b{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.pl.out{opacity:.4;text-decoration:line-through}
+#log{max-height:200px;overflow-wrap:anywhere}
+@media(max-width:700px){.t{font-size:7px}header .brand{font-size:1.2rem}#lobby{margin:3vh auto}}
+
+@property --ang{syntax:'<angle>';initial-value:0deg;inherits:false}
+@keyframes ang{to{--ang:360deg}}
+#bd::before{content:'';position:absolute;inset:-3px;border-radius:21px;background:conic-gradient(from var(--ang),transparent 55%,var(--ac) 80%,transparent);filter:blur(7px);opacity:.85;transform:translateZ(-2px);animation:ang 7s linear infinite}
+#bg::after{content:'';position:absolute;inset:-50%;background-image:radial-gradient(2px 2px at 20px 30px,#fffa,transparent),radial-gradient(1.5px 1.5px at 90px 120px,#fff8,transparent),radial-gradient(2px 2px at 160px 60px,#fff6,transparent);background-size:200px 200px;opacity:.55;animation:drift 50s linear infinite}
+@keyframes drift{to{transform:translateY(200px)}}
+.brand{text-shadow:0 0 14px var(--ac),0 0 34px var(--ac);animation:bp 3s ease-in-out infinite alternate}
+@keyframes bp{from{text-shadow:0 0 8px var(--ac),0 0 18px var(--ac)}to{text-shadow:0 0 16px var(--ac),0 0 44px var(--ac)}}
+.lg{animation:sp 70s linear infinite,lgp 3s ease-in-out infinite alternate}
+@keyframes lgp{from{box-shadow:0 0 14px #ff1a1a88}to{box-shadow:0 0 36px #ff2a2add}}
+.pri:not(:disabled){animation:gl 1.8s ease-in-out infinite}
+@keyframes gl{50%{box-shadow:0 0 20px var(--ac)}}
+.pri:hover:not(:disabled){box-shadow:0 0 22px var(--ac)}
+#lobby{animation:rise .8s cubic-bezier(.2,.9,.3,1)}
+@keyframes rise{from{opacity:0;transform:translateY(24px) scale(.96)}}
+.t:hover{box-shadow:0 3px 0 rgba(0,0,0,.35),0 0 16px var(--ac)}
+.t.own{box-shadow:0 3px 0 rgba(0,0,0,.35),0 0 12px var(--oc)}
+#em{filter:drop-shadow(0 0 20px var(--ac))}
+#potd{font-weight:700;min-height:1em;text-shadow:0 0 10px var(--ac)}
+.pn.on{animation:pulse2 1.4s ease-in-out infinite}
+@keyframes pulse2{50%{filter:drop-shadow(0 6px 3px rgba(0,0,0,.55)) drop-shadow(0 0 12px var(--pc))}}
+.dice.toss{animation:toss 1s;filter:drop-shadow(0 0 16px var(--ac))}
+.pl b.up{animation:up .9s}.pl b.dn{animation:dn .9s}
+@keyframes up{0%{color:#4ade80;text-shadow:0 0 12px #4ade80;transform:scale(1.4)}}
+@keyframes dn{0%{color:#f87171;text-shadow:0 0 12px #f87171;transform:scale(1.4)}}
+#toast{position:fixed;top:76px;left:50%;transform:translateX(-50%);z-index:60;pointer-events:none;display:grid;gap:6px;justify-items:center;width:max-content;max-width:calc(100% - 24px)}
+.tt{padding:8px 18px;border-radius:999px;background:var(--g);border:1px solid var(--ac);box-shadow:0 0 18px var(--ac);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);animation:tin .4s cubic-bezier(.2,1.4,.4,1),tout .4s 2.7s forwards;overflow-wrap:anywhere}
+@keyframes tin{from{opacity:0;transform:translateY(-14px) scale(.9)}}
+@keyframes tout{to{opacity:0;transform:translateY(-10px)}}
+.cf{position:fixed;top:-14px;width:9px;height:14px;z-index:70;pointer-events:none;animation:cf linear forwards}
+@keyframes cf{to{transform:translateY(108vh) rotate(720deg)}}
+.sr{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.sr input[type=number],.sr select{width:120px}
+.sr input[type=checkbox]{width:22px;height:22px;accent-color:var(--ac)}
+</style>
+</head>
+<body data-t="purple">
+<div id="bg"><i></i><i></i><i></i></div>
+<header class="gl">
+ <img class="lg" id="logo" src="logo.jpg" alt="EdaPoly" draggable="false">
+ <b class="brand">EdaPoly</b>
+ <nav id="nav"><button data-m="settings">تنظیمات</button><button data-m="cities">شهرها</button><button data-m="themes">تم</button><button data-m="rules">راهنما</button><button data-m="about">درباره</button><button id="vw">زاویه دید</button></nav>
+</header>
+<div id="lobby" class="gl">
+ <img class="lg" src="logo.jpg" alt="" draggable="false">
+ <h1>EdaPoly</h1>
+ <p>مونوپولی شهرها؛ با دوستانت روی یک لینک یا کد.</p>
+ <input id="nm" placeholder="اسم تو" maxlength="14" autocomplete="off">
+ <div id="lb-host" style="display:grid;gap:14px">
+  <div class="chips" id="cc"></div>
+  <button id="mk" class="pri">ساخت اتاق</button>
+  <div class="row"><input id="jc" placeholder="کد اتاق" maxlength="5" autocomplete="off" style="text-transform:uppercase;direction:ltr;text-align:center"><button id="jc2">پیوستن</button></div>
+ </div>
+ <div id="lb-join" hidden><p>کد اتاق: <b id="rc0" dir="ltr"></b></p><button id="jn" class="pri">پیوستن به بازی</button></div>
+ <p id="err" style="color:#ff8a8a;min-height:1.4em"></p>
+</div>
+<div id="game" hidden>
+ <div id="stage"><div id="bd"><div id="tiles"></div><div id="pawns"></div>
+  <div id="mid"><div id="em"></div><h2 id="cn"></h2><div id="potd"></div><div class="dice" id="dice"></div></div>
+ </div></div>
+ <aside id="side" class="gl">
+  <div id="inv" hidden><div class="rcode"><span>کد اتاق</span><b id="rcode" dir="ltr"></b></div><div class="row"><input id="link" readonly aria-label="لینک دعوت"><button id="cp">کپی لینک</button></div></div>
+  <div id="pls"></div>
+  <div id="loc" hidden class="row"><input id="ln" placeholder="بازیکن محلی" maxlength="14"><button id="la">افزودن</button></div>
+  <div id="log"></div>
+  <div class="row"><input id="chat" placeholder="پیام…" maxlength="120" autocomplete="off"><button id="cs">ارسال</button></div>
+ </aside>
+</div>
+<div id="toast"></div>
+<div id="dock" class="gl" hidden><span id="who"></span><button id="b0" class="pri" hidden>شروع بازی</button><button id="b1" class="pri">انداختن تاس</button><button id="b2">خرید ملک</button><button id="b3">پایان نوبت</button></div>
+<div id="con" class="gl"><div class="row"><input id="cin" placeholder="set cash Ali 5000" autocomplete="off" spellcheck="false"><button id="go">Run</button></div><pre id="cout"></pre><small class="h">set cash Ali 5000 | set Safaiye to Ali | set Safaiye to bank</small></div>
+<div id="mo" hidden><div id="mb" class="gl"></div></div>
+<script>
+const $=id=>document.getElementById(id);
+const norm=s=>String(s).toLowerCase().replace(/[\s\-_\u200c]/g,'');
+const COL=['#8d6e63','#4fc3f7','#ec407a','#ffa726','#ef5350','#fdd835','#66bb6a','#5c6bc0'];
+const PC=['#ff5252','#40c4ff','#69f0ae','#ffd740','#e040fb','#ff9e80'];
+const ST=[['ایستگاه مترو','metro'],['فرودگاه','airport'],['راه‌آهن','rail'],['ترمینال','terminal']];
+const CITIES={
+ tehran:['تهران','تجریش:Tajrish,ونک:Vanak,پونک:Punak,شهرک غرب:ShahrakGharb,سعادت‌آباد:SaadatAbad,نیاوران:Niavaran,پاسداران:Pasdaran,زعفرانیه:Zafaraniye,الهیه:Elahiye,ولنجک:Velenjak,میرداماد:Mirdamad,جردن:Jordan,صادقیه:Sadeghiye,شهران:Shahran,نارمک:Narmak,پیروزی:Piruzi,هفت‌حوض:HaftHoz,تهرانپارس:Tehranpars,شوش:Shush,ولیعصر:Valiasr,انقلاب:Enghelab,آزادی:Azadi'],
+ isfahan:['اصفهان','صفائیه:Safaiye,جلفا:Jolfa,چهارباغ:Chaharbagh,سی‌وسه‌پل:Siosepol,نقش جهان:NaghshJahan,خواجو:Khaju,ملک‌شهر:Malekshahr,سپاهان‌شهر:Sepahanshahr,مرداویج:Mardavij,احمدآباد:Ahmadabad,کاوه:Kaveh,هشت‌بهشت:HashtBehesht,آتشگاه:Atashgah,شهرک صدف:Sadaf,باغ غدیر:BaghGhadir,شیخ‌بهایی:SheikhBahaei,رهنان:Rahnan,زینبیه:Zeynabiye,بزرگمهر:Bozorgmehr,دروازه شیراز:DarvazeShiraz,فلاورجان:Falavarjan,زاینده‌رود:Zayanderud'],
+ shiraz:['شیراز','ارگ کریم‌خان:ArgKarimKhan,حافظیه:Hafeziye,سعدیه:Saadiye,باغ ارم:BaghEram,قصردشت:Ghasrdasht,معالی‌آباد:Maaliabad,زرگری:Zargari,چمران:Chamran,گلدشت:Goldasht,فرهنگ‌شهر:Farhangshahr,بین‌الحرمین:BeynolHaramein,دروازه قرآن:DarvazeQuran,پاسارگاد:Pasargad,گویم:Gooyom,ستارخان:Sattarkhan,میدان شهرداری:Shahrdari,احمدی:Ahmadi,عفیف‌آباد:Afifabad,کوهسنگی:Koohsangi,بلوار زند:Zand,جهان‌نما:JahanNama,نارنجستان:Narenjestan']
+};
+ CITIES.yazd=['یزد','مسجد جامع:JameMosque,امیرچخماق:AmirChakhmaq,دولت‌آباد:DolatAbad,خاموشان:Khamoshan,زندان اسکندر:ZendanEskandar,بافت تاریخی:Baft,فهادان:Fahadan,صفائیه:Safaiye,کوچه‌باغ:KoocheBagh,دهوک:Dehook,بازار خان:BazarKhan,ضیائیه:Ziaiye,تفت:Taft,مهریز:Mehriz,میبد:Meybod,کاروانسرا:Caravanserai,بادگیر:Badgir,آب‌انبار:Abanbar,آتشکده:Atashkade,برج سکوت:BorjSokut,قنات:Ghanat,شاهزاده فاضل:ShahzadeFazel'];
+CITIES.kish=['کیش','کشتی یونانی:GreekShip,کاریز:Kariz,ساحل مرجان:Marjan,دلفیناریوم:Dolphinarium,حریره:Harireh,ساحل مروارید:Morvarid,بلوار سنایی:Sanaei,بلوار ساحل:Saheli,پارک ملل:Melal,بازار سنتی:Bazar,مجتمع پارمیس:Parmis,باغ پرندگان:BirdGarden,اسکله تفریحی:Marina,شهر آفتاب:Aftab,میدان امام:Emam,شهرک فلامینگو:Flamingo,ساحل دلفین:Dolphin,پارک فرشته:Fereshte,جزیره شنی:Sandbar,باغ‌راه:Baghrah,اسکله غواصی:Diving,هتل ترمه:Termeh'];
+CITIES.mashhad=['مشهد','پارک ملت:Mellat,وکیل‌آباد:VakilAbad,طرقبه:Torghabeh,شاندیز:Shandiz,توس:Tus,کوه‌سنگی:KuhSangi,قاسم‌آباد:GhasemAbad,احمدآباد:Ahmadabad,سجاد:Sajad,امامیه:Emamiye,هاشمیه:Hashemiye,بلوار معلم:Moallem,ملک‌آباد:MalekAbad,طبرسی:Tabarsi,پیروزی:Piruzi,رضاشهر:Rezashahr,بلوار خیام:Khayyam,بلوار امامت:Emamat,گلستان:Golestan,بلوار فرهنگ:Farhang,چهارراه شهدا:Shohada,سناباد:Sanabad'];
+CITIES.chaharmahal=['چهارمحال و بختیاری','شهرکرد:Shahrekord,بروجن:Borujen,فارسان:Farsan,لردگان:Lordegan,اردل:Ardal,کیار:Kiar,سامان:Saman,بن:Ben,کوهرنگ:Kuhrang,چلگرد:Chelgerd,چغاخور:Choghakhor,شلمزار:Shalamzar,جونقان:Junaghan,سفیددشت:Sefiddasht,هفشجان:Hafshejan,سودجان:Sudjan,ناغان:Naghan,گندمکار:Gandomkar,دیمه:Dime,بازفت:Bazoft,زردکوه:Zardkuh,آبشار کوهرنگ:AbshareKuhrang'];
+CITIES.istanbul=['استانبول','Sultanahmet,Galata Tower,Taksim,Besiktas,Kadikoy,Uskudar,Bebek,Ortakoy,Balat,Fener,Nisantasi,Sisli,Levent,Maslak,Sariyer,Eminonu,Grand Bazaar,Hagia Sophia,Topkapi,Pera,Moda,Princes Islands'];
+CITIES.dubai=['دبی','Burj Khalifa,Palm Jumeirah,Dubai Marina,Downtown,JBR,Deira,Bur Dubai,Al Barsha,Business Bay,Jumeirah,Dubai Mall,Al Fahidi,Creek Harbour,Dubai Frame,Global Village,Emirates Hills,Springs,Meydan,Silicon Oasis,Al Quoz,Mirdif,Burj Al Arab'];
+CITIES.paris=['پاریس','Montmartre,Le Marais,Champs-Elysees,Eiffel Tower,Louvre,Notre-Dame,Latin Quarter,Saint-Germain,Bastille,Belleville,Pigalle,Trocadero,Invalides,Opera,La Defense,Montparnasse,Passy,Batignolles,Canal Saint-Martin,Les Halles,Tuileries,Place Vendome'];
+CITIES.london=['لندن','Camden,Soho,Notting Hill,Covent Garden,Westminster,Big Ben,Tower Bridge,Greenwich,Shoreditch,Kensington,Chelsea,Mayfair,Hyde Park,Piccadilly,Brixton,Hampstead,Canary Wharf,Southbank,Borough,Islington,Richmond,Baker Street'];
+CITIES.newyork=['نیویورک','Times Square,Central Park,Brooklyn Bridge,SoHo,Harlem,Wall Street,Chinatown,Greenwich Village,Chelsea Market,Williamsburg,DUMBO,Coney Island,Hells Kitchen,Upper East Side,Tribeca,Little Italy,High Line,Statue of Liberty,Bronx Zoo,Queens,Fifth Avenue,Battery Park'];
+CITIES.tokyo=['توکیو','Shibuya,Shinjuku,Harajuku,Akihabara,Asakusa,Ginza,Roppongi,Ueno,Odaiba,Ikebukuro,Meguro,Ebisu,Daikanyama,Shimokitazawa,Tsukiji,Marunouchi,Nakano,Kichijoji,Omotesando,Yanaka,Tokyo Tower,Skytree'];
+const THEMES={purple:'بنفش',crimson:'قرمز',glass:'شیشه‌ای',sunset:'غروب',ocean:'اقیانوس',forest:'جنگل',light:'روشن'};
+const ICON={start:'🏁',jail:'🔒',park:'🅿️',go:'🚔',tax:'💸',chest:'🎁',chance:'❓',st:'🚇',ut:'💡'};
+const TC={};
+function TL(city=S.city){
+ if(TC[city])return TC[city];
+ const P=CITIES[city][1].split(',').map(x=>x.split(':'));let k=0,s=0;
+ return TC[city]=[...Array(40)].map((_,i)=>{
+  const ty={0:'start',10:'jail',20:'park',30:'go',4:'tax',38:'tax',2:'chest',17:'chest',33:'chest',7:'chance',22:'chance',36:'chance',12:'ut',28:'ut'}[i]||([5,15,25,35].includes(i)?'st':'prop');
+  let name={start:'شروع',jail:'زندان',park:'پارکینگ',go:'برو زندان',tax:'مالیات',chest:'صندوق',chance:'شانس'}[ty],en='',price=0,col='';
+  if(ty=='prop'){[name,en=name]=P[k];price=60+k*10;col=COL[k/3|0];k++}
+  else if(ty=='st'){[name,en]=ST[s++];price=200}
+  else if(ty=='ut'){name=i==12?'شرکت برق':'شرکت آب';en=i==12?'bargh':'ab';price=150}
+  return{i,ty,name,en,price,col};
+ });
+}
+function xy(i){return i<=10?[10,10-i]:i<=20?[10-(i-10),0]:i<=30?[0,i-20]:[i-30,10]}
+
+let S=null,host=false,peer=null,conn=null,conns=[];
+const me=()=>host?'host':(peer&&peer.id);
+const ns=city=>({city,set:{cash:1500,sal:200,max:6,rent:1,dbl:true,tax:true,pot:false},pot:0,players:[],own:{},turn:0,rolled:false,dice:[1,1],pend:null,log:['بازی شروع شد']});
+const addP=(name,cid)=>S.players.push({name,cid,cash:S.set.cash,pos:0,jail:0,col:PC[S.players.length%PC.length]});
+const log=m=>{S.log.unshift(m);S.log.length=Math.min(S.log.length,30)};
+const push=()=>{conns=conns.filter(c=>c.open);conns.forEach(c=>c.send(S));render()};
+
+function rent(t){let r=t.ty=='ut'?(S.dice[0]+S.dice[1])*4:Math.round(t.price/8);if(t.ty=='prop'&&S.set.dbl&&TL().filter(x=>x.col==t.col).every(x=>S.own[x.i]==S.own[t.i]))r*=2;return Math.round(r*S.set.rent)}
+function land(p){
+ const t=TL()[p.pos],idx=S.players.indexOf(p);
+ if(['prop','st','ut'].includes(t.ty)){
+  const o=S.own[t.i];
+  if(o==null)S.pend=t.i;
+  else if(o!=idx){const r=rent(t);p.cash-=r;S.players[o].cash+=r;log(`${p.name} ${r} اجاره به ${S.players[o].name} داد (${t.name})`)}
+ }else if(t.ty=='tax'){if(!S.set.tax)return;const x=t.i==4?100:200;p.cash-=x;if(S.set.pot)S.pot+=x;log(`${p.name} ${x} مالیات داد`)}
+ else if(t.ty=='chance'||t.ty=='chest'){const v=[-150,-100,-50,50,100,150,200][Math.random()*7|0];p.cash+=v;log(`${p.name} از ${t.name}: ${v>0?'+':''}${v}`)}
+ else if(t.ty=='park'&&S.set.pot&&S.pot){p.cash+=S.pot;log(`${p.name} ${S.pot} از پارکینگ برد`);S.pot=0}
+ else if(t.ty=='go'){p.pos=10;p.jail=1;log(`${p.name} به زندان رفت`)}
+}
+const LIM={cash:[100,50000],sal:[0,2000],max:[2,8]};
+function setSet(k,v){if(!(k in S.set))return;const l=LIM[k];if(l)v=Math.min(l[1],Math.max(l[0],+v||0));S.set[k]=v;if(k=='cash'&&!S.st)S.players.forEach(p=>p.cash=v);log('تنظیمات اتاق عوض شد');push()}
+function chk(p){if(p.cash>=0||S.players.length<2)return;const i=S.players.indexOf(p);p.out=1;for(const k in S.own)if(S.own[k]==i)delete S.own[k];log(p.name+' ورشکست شد');const al=S.players.filter(q=>!q.out);if(al.length==1){S.win=al[0].name;log('🏆 '+al[0].name+' برنده شد!')}}
+function handle(d,cid){
+ if(!host)return;
+ if(d.t=='hello'){const nm=String(d.name||'بازیکن').slice(0,14),lv=new Set(conns.filter(c=>c.open).map(c=>c.peer)),ex=S.players.find(p=>p.name==nm&&p.cid!='host'&&!lv.has(p.cid));if(ex){ex.cid=cid;log(nm+' برگشت')}else if(S.players.length<S.set.max){addP(nm,cid);log(nm+' وارد شد')}return push()}
+ if(d.t=='set'){if(cid=='host')setSet(d.k,d.v);return}
+ if(d.t=='start'){if(cid=='host'){S.st=1;log('بازی شروع شد');push()}return}
+ if(d.t=='chat'){const pl=S.players.find(p=>p.cid==cid);if(pl){log('💬 '+pl.name+': '+String(d.x).slice(0,120));push()}return}
+ if(d.t=='cmd'){log(cmd(String(d.x)));return push()}
+ const p=S.players[S.turn];
+ if(!p||S.win||(p.cid!=cid&&!(cid=='host'&&p.cid!='host'&&!new Set(conns.filter(c=>c.open).map(c=>c.peer)).has(p.cid))))return;
+ if(d.t=='roll'&&!S.rolled&&S.st){
+  const a=1+Math.random()*6|0,b=1+Math.random()*6|0;S.dice=[a,b];S.rc=(S.rc||0)+1;S.rolled=true;
+  if(p.jail){p.jail--;log(`${p.name} در زندان است`)}
+  else{const n=p.pos+a+b;if(n>=40&&S.set.sal){p.cash+=S.set.sal;log(`${p.name} ${S.set.sal} از شروع گرفت`)}p.pos=n%40;land(p)}chk(p);
+ }
+ if(d.t=='buy'&&S.pend!=null){const t=TL()[S.pend];if(p.cash>=t.price){p.cash-=t.price;S.own[t.i]=S.turn;log(`${p.name} ${t.name} را خرید`);S.pend=null}}
+ if(d.t=='end'&&S.rolled){let g=0;do{S.turn=(S.turn+1)%S.players.length}while(S.players[S.turn].out&&++g<20);S.rolled=false;S.pend=null}
+ push();
+}
+function cmd(x){
+ x=x.trim().replace(/^set\s+/i,'');let m;
+ const P=n=>{n=norm(n);return S.players.find(p=>norm(p.name)==n)||S.players.find(p=>norm(p.name).includes(n))};
+ if(m=x.match(/^turn\s+(.+)$/i)){const p=P(m[1]);if(!p)return'بازیکن پیدا نشد';S.turn=S.players.indexOf(p);S.rolled=false;S.pend=null;return'نوبت '+p.name}
+ if(m=x.match(/^cash\s+(.+)\s+(-?\d+)$/i)){const p=P(m[1]);if(!p)return'بازیکن پیدا نشد';p.cash=+m[2];return`پول ${p.name} شد ${m[2]}`}
+ if(m=x.match(/^(.+?)\s+to\s+(.+)$/i)){
+  const n=norm(m[1]),t=TL().find(t=>t.price&&(norm(t.name)==n||norm(t.en)==n))||TL().find(t=>t.price&&(norm(t.name).includes(n)||norm(t.en).includes(n)));
+  if(!t)return'ملک پیدا نشد';
+  if(/^(bank|بانک)$/i.test(m[2].trim())){delete S.own[t.i];return`${t.name} برگشت به بانک`}
+  const p=P(m[2]);if(!p)return'بازیکن پیدا نشد';
+  S.own[t.i]=S.players.indexOf(p);return`${t.name} مال ${p.name} شد`;
+ }
+ return'دستور نامعتبر. مثال: set cash Ali 5000';
+}
+window.set=function(s,...v){return run(typeof s=='string'?s:String.raw(s,...v))};
+function act(t){host?handle({t},'host'):conn&&conn.send({t})}
+
+const CX={tehran:['#a855f7','🗼'],isfahan:['#38bdf8','🕌'],shiraz:['#f472b6','🌹'],yazd:['#f59e0b','🏜️'],kish:['#22d3ee','🏝️'],mashhad:['#34d399','🌆']};
+const PIP={1:[5],2:[1,9],3:[1,5,9],4:[1,3,7,9],5:[1,3,5,7,9],6:[1,3,4,6,7,9]};
+const FR=[[0,0],[0,-90],[-90,0],[90,0],[0,90],[0,180]];
+const VIEWS=[[50,.74],[28,.93],[0,1]];
+let shown=[],walking=[],lastRc=-1,dl=0,view=innerWidth<700?2:0,pick='tehran';
+const R=document.documentElement.style;
+function setView(v){view=v%3;R.setProperty('--rx',VIEWS[view][0]+'deg');R.setProperty('--sh',VIEWS[view][1])}
+setView(view);
+$('vw').onclick=()=>setView(view+1);
+$('bd').parentNode.onmousemove=e=>{const b=e.currentTarget.getBoundingClientRect();R.setProperty('--rz',view?'0deg':((e.clientX-b.left)/b.width-.5)*10+'deg')};
+$('bd').parentNode.onmouseleave=()=>R.setProperty('--rz','0deg');
+[0,1].forEach(k=>$('dice').insertAdjacentHTML('beforeend',`<div class="die" id="d${k}">${[1,2,3,4,5,6].map(n=>`<div class="fc">${PIP[n].map(g=>`<i style="grid-area:${Math.ceil(g/3)}/${(g-1)%3+1}"></i>`).join('')}</div>`).join('')}</div>`));
+
+function place(i){const el=$('pw'+i),[r,c]=xy(shown[i]);el.style.left=(c+.5)/11*100+'%';el.style.top=(r+.5)/11*100+'%'}
+function walk(i){
+ const p=S.players[i];if(!p||walking[i])return;
+ const d=(p.pos-shown[i]+40)%40;if(!d)return;
+ if(d>12){shown[i]=p.pos;place(i);return}
+ walking[i]=1;
+ const st=()=>{const q=S.players[i];if(!q||shown[i]==q.pos){walking[i]=0;return}shown[i]=(shown[i]+1)%40;place(i);setTimeout(st,200)};
+ setTimeout(st,dl);
+}
+function pawns(){
+ S.players.forEach((p,i)=>{
+  let el=$('pw'+i);
+  if(!el){el=document.createElement('div');el.id='pw'+i;el.className='pn';$('pawns').appendChild(el);shown[i]=p.pos;place(i)}
+  el.style.setProperty('--pc',p.col);el.style.setProperty('--i',i);el.classList.toggle('on',i==S.turn);
+  walk(i);
+ });
+ dl=0;
+}
+Object.assign(CX,{chaharmahal:['#84cc16','⛰️'],istanbul:['#f97316','🌉'],dubai:['#eab308','🏙️'],paris:['#ec4899','🥐'],london:['#60a5fa','🎡'],newyork:['#22c55e','🗽'],tokyo:['#f43f5e','⛩️']});
+const esc=x=>String(x).replace(/[&<>"']/g,c=>'&#'+c.charCodeAt(0)+';');
+function render(){
+ if(!S)return;
+ const T=TL(),cur=S.players[S.turn],away=host&&cur&&cur.cid!='host'&&!new Set(conns.filter(c=>c.open).map(c=>c.peer)).has(cur.cid),mine=cur&&(cur.cid==me()||away),[ac,em]=CX[S.city]||['#fff','🎲'],pt=S.pend!=null?T[S.pend]:null,on=S.st&&!S.win;
+ document.body.style.setProperty('--ac',ac);
+ $('tiles').innerHTML=T.map(t=>{const [r,c]=xy(t.i),o=S.own[t.i],ow=o!=null?S.players[o]:null;
+  return`<div class="t ${t.ty}${ow?' own':''}" data-i="${t.i}" style="grid-area:${r+1}/${c+1};${ow?'--oc:'+ow.col:''}">${t.col?`<i class="cb" style="background:${t.col}"></i>`:''}<b>${t.price?'':(ICON[t.ty]||'')+' '}${t.name}</b>${t.price?`<small>${t.price}</small>`:''}</div>`}).join('');
+ $('em').textContent=em;$('potd').textContent=S.set.pot?'🅿️ جایزه پارکینگ: '+S.pot:'';$('cn').textContent=CITIES[S.city][0];
+ $('dock').hidden=false;$('b0').hidden=!(host&&!S.st);
+ $('who').innerHTML=S.win?`🏆 ${esc(S.win)}`:!S.st?'منتظر شروع بازی…':cur?`نوبت <b style="color:${cur.col}">${esc(cur.name)}</b>${mine&&!away?' (تو)':''}${away?' (قطع شده)':''}`:'';
+ $('b1').disabled=!(on&&mine&&!S.rolled);$('b2').disabled=!(on&&mine&&pt);$('b3').disabled=!(on&&mine&&S.rolled);
+ $('b2').textContent=pt?`خرید ${pt.name} (${pt.price})`:'خرید ملک';
+ const rc=S.rc||0;
+ if(rc!==lastRc){
+  const first=lastRc<0;lastRc=rc;
+  [0,1].forEach(k=>{const [x,y]=FR[S.dice[k]-1],e=$('d'+k),n=first?0:360*(2+(Math.random()*2|0));e.style.transition=first?'none':'';e.style.transform=`rotateX(${x+n}deg) rotateY(${y+n+(k?360:0)}deg)`});
+  if(!first){const d=$('dice');d.classList.remove('toss');void d.offsetWidth;d.classList.add('toss');dl=1100}
+ }
+ pawns();
+ $('pls').innerHTML=S.players.map((p,i)=>{const cls=pc[i]!=null&&p.cash!=pc[i]?(p.cash>pc[i]?'up':'dn'):'';pc[i]=p.cash;const nw=p.cash+Object.keys(S.own).filter(k=>S.own[k]==i).reduce((a,k)=>a+T[k].price,0);return`<div class="pl ${i==S.turn?'cur':''} ${p.out?'out':''}"><i style="background:${p.col}"></i><span>${esc(p.name)}<small class="h"> ثروت ${nw}</small></span><b class="${cls}">${p.cash}</b></div>`}).join('');
+ $('log').innerHTML=S.log.map(l=>`<div>${esc(l)}</div>`).join('');
+ if(S.log[0]!==tl){tl=S.log[0];toast(tl)}if(S.win&&!won){won=1;confetti()}$('rcode').textContent=S.code||'';$('link').value=location.href.split('?')[0].split('#')[0]+'?room='+S.code;$('inv').hidden=!S.code;
+ $('loc').hidden=!host;
+}
+$('tiles').onclick=e=>{const el=e.target.closest('.t');if(!el||!S)return;const t=TL()[+el.dataset.i],o=S.own[t.i],ow=o!=null?S.players[o]:null;
+ const inf={start:'با هر بار عبور حقوق می‌گیری.',jail:'فقط ملاقات.',park:'استراحت.',go:'تو را به زندان می‌فرستد.',tax:'مالیات می‌دهی.',chest:'پول کم یا زیاد می‌شود.',chance:'پول کم یا زیاد می‌شود.'};
+ $('mb').innerHTML=`<h3>${t.name}</h3><p>${t.price?`قیمت: ${t.price}<br>اجاره: ${rent(t)}<br>صاحب: ${ow?esc(ow.name):'بانک'}`:inf[t.ty]||''}</p><button id="x">بستن</button>`;$('mo').hidden=false};
+function run(x){
+ if(!S){$('cout').textContent='بازی هنوز شروع نشده';return}
+ if(host){const r=cmd(x);log(r);push();$('cout').textContent='> '+x+'\n'+r}
+ else if(conn){conn.send({t:'cmd',x});$('cout').textContent='> '+x+' (ارسال شد)'}
+ return'ok';
+}
+$('b1').onclick=()=>act('roll');$('b2').onclick=()=>act('buy');$('b3').onclick=()=>act('end');
+
+// ----- menu, modal, console toggle -----
+const chipsHTML=()=>Object.entries(CITIES).map(([id,v])=>`<button data-c="${id}" class="${id==(S?S.city:pick)?'on':''}" style="--k:${CX[id][0]}"><span>${CX[id][1]}</span>${v[0]}</button>`).join('');
+const chips=()=>{$('cc').innerHTML=chipsHTML()};
+function setTheme(k){document.body.dataset.t=k;try{localStorage.setItem('edapoly-theme',k)}catch(e){}}
+function pickCity(id){if(!S)pick=id;else if(host){S.city=id;log('شهر: '+CITIES[id][0]);push()}else return;chips();if(!$('mo').hidden)modal('cities')}
+function modal(k){
+ const M={settings:setHTML(),
+  cities:`<h3>شهرها</h3><div class="chips">${chipsHTML()}</div><small class="h">${S&&!host?'فقط میزبان می‌تواند شهر را عوض کند.':'با عوض کردن شهر، ملک‌ها و پول‌ها سر جایشان می‌مانند.'}</small>`,
+  themes:`<h3>تم</h3><div class="chips">${Object.entries(THEMES).map(([k,v])=>`<button data-th="${k}" class="${document.body.dataset.t==k?'on':''}">${v}</button>`).join('')}</div>`,
+  rules:`<h3>راهنما</h3><ol><li>هر نوبت تاس بینداز؛ مهره‌ات جلو می‌رود.</li><li>ملک بی‌صاحب را می‌توانی بخری؛ روی ملک بقیه اجاره می‌دهی.</li><li>هر بار از «شروع» رد شوی حقوق می‌گیری (در تنظیمات قابل تغییر).</li><li>شانس و صندوق پول کم یا زیاد می‌کنند؛ مالیات ۱۰۰ یا ۲۰۰ است.</li><li>«برو زندان» یک نوبتت را می‌سوزاند.</li><li>کلید فاصله هم تاس می‌اندازد.</li></ol>`,
+  about:`<h3>EdaPoly</h3><p>مونوپولی شهرهای ایران. اتاق مستقیم بین مرورگرها ساخته می‌شود؛ پس تا وقتی میزبان صفحه را باز نگه دارد، بازی ادامه دارد.</p>`
+ };
+ $('mb').innerHTML=M[k]+'<button id="x">بستن</button>';$('mo').hidden=false;
+}
+$('nav').onclick=e=>{const b=e.target.closest('[data-m]');if(b)modal(b.dataset.m)};
+$('mo').onclick=e=>{if(e.target.id=='mo'||e.target.id=='x')$('mo').hidden=true};
+$('mb').onclick=e=>{const b=e.target.closest('button[data-c],button[data-th]');if(!b)return;if(b.dataset.c)pickCity(b.dataset.c);else{setTheme(b.dataset.th);modal('themes')}};
+$('cc').onclick=e=>{const b=e.target.closest('button');if(b)pickCity(b.dataset.c)};
+let lc=0,lt;
+document.querySelectorAll('.lg').forEach(el=>el.onclick=()=>{
+ lc++;clearTimeout(lt);lt=setTimeout(()=>lc=0,900);
+ if(lc>=3){lc=0;if($('con').classList.toggle('on'))setTimeout(()=>$('cin').focus(),60)}
+});
+document.addEventListener('keydown',e=>{
+ if(e.key=='Escape'){$('mo').hidden=true;$('con').classList.remove('on')}
+ if(e.code=='Space'&&S&&!/INPUT|SELECT|BUTTON/.test(e.target.tagName)){e.preventDefault();if(!$('b1').disabled)act('roll')}
+});
+const doCmd=()=>{const v=$('cin').value.trim();if(v){run(v);$('cin').value=''}};
+$('go').onclick=doCmd;$('cin').onkeydown=e=>{if(e.key=='Enter')doCmd()};
+try{const s=localStorage.getItem('edapoly-theme');if(s&&THEMES[s])document.body.dataset.t=s}catch(e){}
+
+// ----- lobby & network -----
+const nameOf=()=>$('nm').value.trim()||'بازیکن';
+const cl=v=>String(v||'').toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,5);
+const rq=cl(new URLSearchParams(location.search).get('room'));
+const err=m=>{$('err').textContent=m||''};
+if(rq){$('lb-host').hidden=true;$('rc0').textContent=rq}else $('lb-join').hidden=true;
+chips();
+const show=()=>{$('lobby').hidden=true;$('game').hidden=false};
+const CH='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+const gen=()=>Array.from({length:5},()=>CH[Math.random()*CH.length|0]).join('');
+function hostRoom(tries=0){
+ const code=gen();err('در حال ساخت اتاق…');
+ const pr=new Peer('edapoly-'+code);peer=pr;
+ pr.on('open',()=>{host=true;S=ns(pick);S.code=code;addP(nameOf(),'host');err();show();render();modal('settings')});
+ pr.on('connection',c=>{conns.push(c);c.on('data',d=>handle(d,c.peer));c.on('open',()=>c.send(S))});
+ pr.on('error',e=>{if(e.type=='unavailable-id'&&tries<5){pr.destroy();hostRoom(tries+1)}else err('ارتباط با سرور برقرار نشد. دوباره تلاش کن.')});
+ pr.on('disconnected',()=>{if(!pr.destroyed)pr.reconnect()});
+}
+function joinRoom(code){
+ err('در حال اتصال…');
+ const pr=new Peer();peer=pr;
+ pr.on('open',()=>{conn=pr.connect('edapoly-'+code,{reliable:true});
+  conn.on('open',()=>conn.send({t:'hello',name:nameOf()}));
+  conn.on('data',d=>{if(!S){err();show()}S=d;render()});
+  conn.on('close',()=>{S=null;lastRc=-1;$('game').hidden=true;$('dock').hidden=true;$('lobby').hidden=false;err('ارتباط با میزبان قطع شد. دوباره وارد شو.')})});
+ pr.on('error',e=>err(e.type=='peer-unavailable'?'اتاقی با این کد پیدا نشد.':'ارتباط با سرور برقرار نشد.'));
+ setTimeout(()=>{if(!S)err('اتصال برقرار نشد. کد را چک کن و دوباره تلاش کن.')},12000);
+}
+$('mk').onclick=()=>hostRoom();
+$('jn').onclick=()=>joinRoom(rq);
+$('jc2').onclick=()=>{const c=cl($('jc').value);c.length==5?joinRoom(c):err('کد اتاق ۵ حرفی است.')};
+$('b0').onclick=()=>act('start');
+$('cp').onclick=()=>{$('link').select();navigator.clipboard&&navigator.clipboard.writeText($('link').value)};
+$('la').onclick=()=>{const n=$('ln').value.trim();if(n&&host){addP(n.slice(0,14),'host');$('ln').value='';push()}};
+const sendChat=()=>{const v=$('chat').value.trim();if(!v||!S)return;host?handle({t:'chat',x:v},'host'):conn.send({t:'chat',x:v});$('chat').value=''};
+$('cs').onclick=sendChat;$('chat').onkeydown=e=>{if(e.key=='Enter')sendChat()};
+
+let tl,won=0,pc=[];
+function toast(m){const b=$('toast'),d=document.createElement('div');d.className='tt';d.textContent=m;b.appendChild(d);while(b.children.length>3)b.firstChild.remove();setTimeout(()=>d.remove(),3200)}
+function confetti(){for(let i=0;i<70;i++){const c=document.createElement('i');c.className='cf';c.style.cssText=`left:${Math.random()*100}vw;background:${PC[i%PC.length]};animation-delay:${Math.random()*1.5}s;animation-duration:${2.5+Math.random()*2}s`;document.body.appendChild(c);setTimeout(()=>c.remove(),6500)}}
+function setHTML(){
+ if(!S)return'<h3>تنظیمات</h3><p>اول یک اتاق بساز.</p>';
+ const s=S.set,d=host?'':'disabled';
+ const num=(k,l,mn,mx,st)=>`<label class="sr">${l}<input type="number" data-k="${k}" value="${s[k]}" min="${mn}" max="${mx}" step="${st}" ${d} ${k=='cash'&&S.st?'disabled':''}></label>`;
+ const chk=(k,l)=>`<label class="sr">${l}<input type="checkbox" data-k="${k}" ${s[k]?'checked':''} ${d}></label>`;
+ return`<h3>تنظیمات اتاق</h3>${num('cash','پول شروع',100,50000,100)}${num('sal','حقوق عبور از شروع',0,2000,50)}${num('max','حداکثر بازیکن',2,8,1)}<label class="sr">ضریب اجاره<select data-k="rent" ${d}>${[.5,1,1.5,2,3].map(v=>`<option value="${v}" ${s.rent==v?'selected':''}>×${v}</option>`).join('')}</select></label>${chk('dbl','اجاره دوبرابر با مجموعهٔ کامل رنگ')}${chk('tax','مالیات فعال')}${chk('pot','جایزهٔ پارکینگ (مالیات‌ها جمع می‌شود)')}<small class="h">${host?(S.st?'پول شروع بعد از شروع بازی قابل تغییر نیست.':'تغییرها همان لحظه اعمال می‌شود.'):'فقط میزبان می‌تواند تنظیمات را عوض کند.'}</small>`;
+}
+$('mb').onchange=e=>{const t=e.target,k=t.dataset.k;if(!k||!host||!S)return;setSet(k,t.type=='checkbox'?t.checked:+t.value)};
+</script>
+</body>
+</html>
