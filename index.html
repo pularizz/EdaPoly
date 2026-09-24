@@ -385,7 +385,7 @@ const nameOf=()=>$('nm').value.trim()||'بازیکن';
 const cl=v=>String(v||'').toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,5);
 const rq=cl(new URLSearchParams(location.search).get('room'));
 const err=m=>{$('err').textContent=m||''};
-if(rq){$('lb-host').hidden=true;$('rc0').textContent=rq}else $('lb-join').hidden=true;
+$('lb-host').hidden=!!rq;$('lb-join').hidden=!rq;if(rq)$('rc0').textContent=rq;
 chips();
 const show=()=>{$('lobby').hidden=true;$('game').hidden=false};
 const CH='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
